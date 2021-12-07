@@ -11,7 +11,7 @@ This section will be discussing all csv files:
 
 
 ###### ptbxl_databse.csv
-This csv file contains 21837 clinical 12-lead ECG records of 10 seconds length from 18885 patients. The patients list contain 52% male and 48% female with ages covering the whole range from 0 to 95 years old. The PTB-XL ECG dataset was collected with devices from Schiller AG for about 7 years. It has 28 different columns that can be categorized into:
+This csv file contains 21837 clinical 12-lead ECG records of 10 seconds length from 18885 patients. The patients list contains 52% male and 48% female with ages covering the whole range from 0 to 95 years old. The PTB-XL ECG dataset was collected with devices from Schiller AG for about 7 years. It has 28 different columns that can be categorized into:
 - Identifiers 
 - General Metadata
 - ECG statements
@@ -21,10 +21,10 @@ This csv file contains 21837 clinical 12-lead ECG records of 10 seconds length f
 **ptbxl_databse.csv file has not been cleaned yet !!! **
 
 ###### scp_statements.csv
-This csv file contain all information that are related to the used annotation scheme that is stored in a dedicated way. It also has the mapping to other annotation such as AHA, aECGREFID, CDISC and DICOM. 
+This csv file contains all information that is related to the used annotation scheme that is stored in a dedicated way. It also has the mapping to other annotations such as AHA, aECGREFID, CDISC and DICOM. 
 
 ###### ptbxl_clean.csv
-In this file, it contains less column than **_ptbxl_database.csv_** file. We remove some columns that we considered not that usefull for our datasets. The 12 columns that we remove are:
+In this file, it contains fewer columns than the **_ptbxl_database.csv_** file. We removed some columns that we considered not that useful for our datasets. The 12 columns that we remove are:
 
 - infarction_stadium1
 - infarction_stadium2
