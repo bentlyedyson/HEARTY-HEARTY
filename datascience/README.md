@@ -11,4 +11,12 @@ This section will be discussing all csv files:
 
 
 ###### ptbxl_databse.csv
-This csv file contains 21837 clinical 12-lead ECG records of 10 seconds length from 18885 patients. The patients list contain 52% male and 48% female with ages covering the whole range from 0 to 95 years old.
+This csv file contains 21837 clinical 12-lead ECG records of 10 seconds length from 18885 patients. The patients list contain 52% male and 48% female with ages covering the whole range from 0 to 95 years old. The PTB-XL ECG dataset was collected with devices from Schiller AG for about 7 years. It has 28 different columns that can be categorized into:
+- Identifiers 
+- General Metadata
+- ECG statements
+- Signal Metadata
+- Cross-validation Folds
+
+###### **This file has not been cleaned yet**
+
