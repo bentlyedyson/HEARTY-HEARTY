@@ -12,4 +12,4 @@ The original raw data is available in (Not included in this repo):
 - https://physionet.org/content/ptb-xl/1.0.1/
 
 All the data wrangling, imputation, and model creation is available
-in the /datascience directory
+in the `/datascience` directory
