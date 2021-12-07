@@ -1,8 +1,8 @@
-### Data science directory
+## Data science directory
 
 Processed data is available as result.csv
 
-###File Description 
+##File Description 
 This section will be discussing all csv files: 
 # ptbxl_database.csv
 # scp_statements.csv
