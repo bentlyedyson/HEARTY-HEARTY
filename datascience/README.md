@@ -24,7 +24,7 @@ This csv file contains 21837 clinical 12-lead ECG records of 10 seconds length f
 This csv file contain all information that are related to the used annotation scheme that is stored in a dedicated way. It also has the mapping to other annotation such as AHA, aECGREFID, CDISC and DICOM. 
 
 ###### ptbxl_clean.csv
-In this file, it contains less column than **ptbxl_database.csv** file. We remove some columns that we considered not that usefull for our datasets. The 12 columns that we remove are:
+In this file, it contains less column than **_ptbxl_database.csv_** file. We remove some columns that we considered not that usefull for our datasets. The 12 columns that we remove are:
 
 - infarction_stadium1
 - infarction_stadium2
@@ -40,4 +40,4 @@ In this file, it contains less column than **ptbxl_database.csv** file. We remov
 - static_noise
 
 ###### ultra_cleanptbxl.csv
-After we clean **ptbxl_clean.csv** by removing some columns from **ptbxl_database.csv**, we will impute some missing values in 2 columns. The columns are **height** and **weight**. We considered these columns to be important because different aspects can determine a person's heart disease including height and weight.
+After we clean **_ptbxl_clean.csv_** by removing some columns from **_ptbxl_database.csv_**, we will impute some missing values in 2 columns. The columns are **_height_** and **_weight_**. We considered these columns to be important because different aspects can determine a person's heart disease including height and weight.
