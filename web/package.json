@@ -1,0 +1,23 @@
+{
+  "name": "hearty-hearty-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bentlyedyson/HEARTY-HEARTY.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bentlyedyson/HEARTY-HEARTY/issues"
+  },
+  "homepage": "https://github.com/bentlyedyson/HEARTY-HEARTY#readme",
+  "dependencies": {
+    "babylonjs": "^4.2.0",
+    "webpack": "^5.65.0"
+  }
+}
