@@ -90,8 +90,8 @@ class Classifier_INCEPTION:
         output_layer = tf.keras.layers.Dense(nb_classes, activation='softmax')(gap_layer)
 
         model = tf.keras.models.Model(inputs=input_layer, outputs=output_layer)
-
-        model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(),
+        print("Bruh")
+        model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(epsilon=0.1),
                       metrics=['accuracy'])
 
         reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50,
