@@ -5,21 +5,18 @@ const https = require("https");
 const fs = require('fs');
 const path = require("path");
 const { spawn } = require("child_process");
+
 const app = express()
 const port = process.env.PORT || 3000;
-
-// Generate temporary folder
-const tempFolder = "tmp/";
-if (!fs.existsSync(tempFolder)) {
-  fs.mkdirSync(tempFolder, {
-    recursive: true,
-  });
-}
-
 // PTB root
 const ptbRoot = "https://physionet.org/files/ptb-xl/1.0.1/";
+const tempFolder = "tmp/";
 
-function fileDeleteHandler(err) {
+/**
+ * Utility functions
+ */
+
+ function fileDeleteHandler(err) {
   if(err) {
     console.log("unlink failed", err);
   } else {
@@ -28,7 +25,7 @@ function fileDeleteHandler(err) {
 }
 
 // Utility to download file to temp
-function downloadFile(url, dest, cbSuc, cbErr) {
+function downloadFile(url, dest, cbSuc=()=>{}, cbErr=()=>{}) {
   // Creates folder if it does not exist
   if (!fs.existsSync(path.dirname(dest))) {
     fs.mkdirSync(path.dirname(dest), {
@@ -37,7 +34,7 @@ function downloadFile(url, dest, cbSuc, cbErr) {
   }
 
   // Download the file
-  const request = https.get(url, function(response) {
+  https.get(url, function(response) {
     if (response.statusCode !== 200) return cbErr(`Error getting file from PTB-XL database! ${response.statusCode}`);
 
     const file = fs.createWriteStream(dest);
@@ -52,16 +49,46 @@ function downloadFile(url, dest, cbSuc, cbErr) {
   });
 }
 
-app.get('/waveform', (req, res) => {
-  const { wid } = req.query;
-  
-  const wfdbFile = ptbRoot + wid;
-  const tempFile = tempFolder + wid;
+/**
+ * Inits the server. Generating and downloading all the files that it needs
+ */
+function initServer() {
+  // Generate temporary folder
+  if (!fs.existsSync(tempFolder)) {
+    fs.mkdirSync(tempFolder, {
+      recursive: true,
+    });
+  }
+
+  const neededFiles = ["ptbxl_database.csv", "scp_statements.csv"];
+
+  // Downloads the ptb csv files
+  for (file of neededFiles) {
+    if (!fs.existsSync(file)) {
+      downloadFile(ptbRoot+file, file, () => {
+        console.log(`Successfully downloaded ${file}`);
+      }, (err) => {
+        throw Error(`Failed to download ${file}: ${err}`);
+      })
+    }
+  }
+}
+
+/**
+ * Routes
+ */
+
+app.get("/waveform/:wid", (req, res) => {
+  const wid = req.params.wid.padStart(5, '0');
+  const wid_path = `records100/${wid.substring(0, 2).padEnd(5, '0')}/${wid}_lr`;
+
+  const wfdbFile = ptbRoot + wid_path;
+  const tempFile = tempFolder + wid_path;
 
   downloadFile(wfdbFile + ".hea", tempFile + ".hea", () => {
     downloadFile(wfdbFile + ".dat", tempFile + ".dat", () => {
 
-      // Do stuff
+      // Get waveform
       const proc = spawn(process.env.PYTHON, [
         "src/wfdbizer.py",
         path.resolve(tempFile),
@@ -93,6 +120,29 @@ app.get('/waveform', (req, res) => {
   });
 });
 
+app.get("/data/:wid", (req, res) => {
+  const wid = req.params.wid.padStart(5, '0');
+  const wid_path = `records100/${wid.substring(0, 2).padEnd(5, '0')}/${wid}_lr`;
+
+  // Get data
+  // Do stuff
+  const proc = spawn(process.env.PYTHON, [
+    "src/ptb_getter.py",
+    wid_path,
+  ]);
+
+  proc.stdout.on("data", (data) => {
+    const result = data.toString().trim();
+    res.send(JSON.parse(result));
+  });
+
+  proc.stderr.on("data", (data) => {
+    res.statusCode = 404;
+    res.send(`Error getting data!`);
+  });
+});
+
+initServer();
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
 })
