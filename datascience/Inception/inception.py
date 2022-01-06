@@ -38,7 +38,7 @@ class Classifier_INCEPTION:
         if self.use_bottleneck and int(input_tensor.shape[-1]) > 1:
             input_inception = tf.keras.layers.Conv1D(filters=self.bottleneck_size, kernel_size=1,
                                                   padding='same', activation=activation, use_bias=False,
-                                                  kernel_regularizer=tf.keras.regularizers.l2(0.001))(input_tensor)
+                                                  )(input_tensor)
         else:
             input_inception = input_tensor
 
@@ -50,14 +50,14 @@ class Classifier_INCEPTION:
         for i in range(len(kernel_size_s)):
             conv_list.append(tf.keras.layers.Conv1D(filters=self.nb_filters, kernel_size=kernel_size_s[i],
                                                  strides=stride, padding='same', activation=activation, use_bias=False,
-                                                 kernel_regularizer=tf.keras.regularizers.l2(0.001))(
+                                                 )(
                 input_inception))
 
         max_pool_1 = tf.keras.layers.MaxPool1D(pool_size=3, strides=stride, padding='same')(input_tensor)
 
         conv_6 = tf.keras.layers.Conv1D(filters=self.nb_filters, kernel_size=1,
                                      padding='same', activation=activation, use_bias=False,
-                                     kernel_regularizer=tf.keras.regularizers.l2(0.001))(max_pool_1)
+                                     )(max_pool_1)
 
         conv_list.append(conv_6)
 
@@ -69,7 +69,7 @@ class Classifier_INCEPTION:
     def _shortcut_layer(self, input_tensor, out_tensor):
         shortcut_y = tf.keras.layers.Conv1D(filters=int(out_tensor.shape[-1]), kernel_size=1,
                                             padding='same', use_bias=False,
-                                            kernel_regularizer=tf.keras.regularizers.l2(0.001))(input_tensor)
+                                            )(input_tensor)
         shortcut_y = tf.keras.layers.BatchNormalization()(shortcut_y)
 
         x = tf.keras.layers.Add()([shortcut_y, out_tensor])
@@ -92,11 +92,10 @@ class Classifier_INCEPTION:
 
         gap_layer = tf.keras.layers.GlobalAveragePooling1D()(x)
 
-        output_layer = tf.keras.layers.Dense(nb_classes, activation='softmax')(gap_layer)
+        output_layer = tf.keras.layers.Dense(nb_classes, activation='sigmoid')(gap_layer)
 
         model = tf.keras.models.Model(inputs=input_layer, outputs=output_layer)
-        print("Bru5h")
-        model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(learning_rate=0.00075),
+        model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
                       metrics=['accuracy'])
 
         reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50,
