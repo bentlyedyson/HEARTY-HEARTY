@@ -131,3 +131,6 @@ tmp/
 
 ptbxl_database.csv
 scp_statements.csv
+
+model.pkl
+standardizer.pkl

@@ -57,12 +57,21 @@ function runPython(file, args, cb) {
     ...args,
   ]);
 
+  // Make sure we don't call the callback 2 times
+  let sent = false;
+
   proc.stdout.on("data", (data) => {
-    cb(data.toString().trim());
+    if (!sent) {
+      cb(data.toString().trim());
+      sent = true;
+    }
   });
 
   proc.stderr.on("data", (data) => {
-    cb(data, "error")
+    if (!sent) {
+      cb(data, "error");
+      sent = true;
+    }
   });
 }
 
@@ -150,14 +159,16 @@ app.post("/predict", (req, res) => {
   const filename = tempFolder + "predict-" + Math.random().toString(10);
   fs.writeFile(filename, JSON.stringify(waveform), (err) => {
     if (err) {
-      res.statusCode = 404;
-      return res.send(`Error saving waveform!`);
+      res.statusCode = 400;
+      fs.unlink(filename, fileDeleteHandler);
+      return res.send(`Error saving waveform!\n${err}`);
     }
 
     runPython("src/predictor.py", [path.resolve(filename)], (result, err) => {
       if (err) {
         res.statusCode = 400;
-        return res.send(`Error predicting data!`);
+        fs.unlink(filename, fileDeleteHandler);
+        return res.send(`Error predicting data!\n${result}`);
       }
       res.send(JSON.parse(result));
     });
