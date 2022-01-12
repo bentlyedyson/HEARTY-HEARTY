@@ -19,8 +19,16 @@ class App {
       const camera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
       camera.attachControl(canvas, true);
       const light1 = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
-      const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
-
+    
+    //3d load 
+    BABYLON.SceneLoader.ImportMeshAsync("", "", "heartyhearty.babylon");
+    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(500, 500, 5000));
+        light.intensity = 100;
+    
+        const light2 = new BABYLON.PointLight("light", new BABYLON.Vector3(0, 0, -50), scene);
+        light2.intensity = 600000 ; 
+        scene.debugLayer.show();
+    
       // hide/show the Inspector
       window.addEventListener("keydown", (ev) => {
           // Shift+Ctrl+Alt+I
