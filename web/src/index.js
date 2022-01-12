@@ -21,7 +21,7 @@ class App {
       const light1 = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
     
     //3d load 
-    BABYLON.SceneLoader.ImportMeshAsync("", "", "heartyhearty.babylon");
+    BABYLON.SceneLoader.ImportMeshAsync("", "", "heart.babylon");
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(500, 500, 5000));
         light.intensity = 100;
     
