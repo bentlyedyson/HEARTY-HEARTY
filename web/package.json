@@ -2,7 +2,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.5",
     "@babel/preset-env": "^7.15.8",
-    "@babylonjs/core": "^4.2.0",
+    "@babylonjs/core": "^4.2.1",
     "@babylonjs/inspector": "^4.2.0",
     "@webpack-cli/generators": "^2.4.1",
     "babel-loader": "^8.2.3",
