@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const express = require("express");
+const cors = require("cors");
 const https = require("https");
 const fs = require('fs');
 const path = require("path");
@@ -12,6 +13,8 @@ const port = process.env.PORT || 3000;
 const ptbRoot = "https://physionet.org/files/ptb-xl/1.0.1/";
 const tempFolder = "tmp/";
 
+// Just allow all origins
+app.use(cors());
 app.use(express.json());
 
 /**
