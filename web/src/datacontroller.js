@@ -16,29 +16,41 @@ class DataController {
     this.fetching = false;
 
     this.randomFetch();
+
+    document.getElementById("randomize").addEventListener("click", () => {
+      if (!this.fetching) {
+        document.getElementById("display").innerHTML = "";
+        this.randomFetch();
+      }
+    });
   }
 
   _doneFetchData() {
-    this.fetching = false;
-
+    document.getElementById("loading").classList.remove("hide");
     document.getElementById("display").innerHTML = jsonHtml.prettyPrint(
       this.metadata
     );
   }
 
+  _doneFetchWaveform() {}
+
   fetchData(num) {
     this.fetching = true;
+    document.getElementById("loading").classList.add("hide");
 
     // How many requests have been completed
     fetch(`${this.host}data/${num}`)
       .then((x) => x.json())
       .then((x) => {
         this.metadata = x;
+        this._doneFetchData();
+
         fetch(`${this.host}waveform/${num}`)
           .then((x) => x.json())
           .then((x) => {
             this.waveform = x;
-            this._doneFetchData();
+            this.fetching = false;
+            this._doneFetchWaveform();
           });
       });
   }

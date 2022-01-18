@@ -26,6 +26,9 @@ pre {
   max-height: 300px;
   max-width: 500px;
   overflow-y: scroll;
+  overflow-x: scroll;
+
+  transition: all ease 1s;
 }
 .json-key {
   color: brown;
@@ -35,4 +38,33 @@ pre {
 }
 .json-string {
   color: olive;
+}
+
+#randomize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+#loading {
+  position: absolute;
+  color: white;
+
+  right: 10px;
+  top: 50%;
+  font-family: "Courier New", Courier, monospace;
+  animation: rotation 5s infinite;
+}
+
+@keyframes rotation {
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.hide {
+  display: none;
 }

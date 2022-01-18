@@ -71,7 +71,8 @@ function runPython(file, args, cb) {
   proc.on("exit", (code) => {
     if (sent) return;
     if (code !== 0) return cb("", "error");
-    cb(dataSend);
+    // TODO: Cheese code
+    setTimeout(() => {cb(dataSend);}, 100);
     sent = true;
   })
 
