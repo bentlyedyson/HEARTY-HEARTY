@@ -69,7 +69,8 @@ class Heart {
   }
 
   _registerBeat() {
-    if (!this.beat) return;
+    // TODO: yesyes
+    // if (!this.beat) return;
 
     // Register animation
     const { minScale, maxScale, meshes, scale } = this;

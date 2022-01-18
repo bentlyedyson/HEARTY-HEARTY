@@ -42,7 +42,7 @@ class App {
     camera.upperAlphaLimit = Math.PI / 3;
     camera.attachControl(canvas, true);
 
-    const dataController = new DataController();
+    const dataController = new DataController(scene);
 
     // hide/show the Inspector
     window.addEventListener("keydown", (ev) => {

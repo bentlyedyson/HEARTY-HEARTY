@@ -31,6 +31,9 @@ app.use(express.json());
 
 // Utility to download file to temp
 function downloadFile(url, dest, cb=()=>{}) {
+  // If file exists, return immediately.
+  if (fs.existsSync(dest)) return cb();
+
   // Creates folder if it does not exist
   if (!fs.existsSync(path.dirname(dest))) {
     fs.mkdirSync(path.dirname(dest), {
@@ -132,16 +135,27 @@ app.get("/waveform/:wid", (req, res) => {
         return res.send(`Error downloading ${wfdbFile}.dat file! ${err}`);
       }
 
-      runPython("src/wfdbizer.py", [path.resolve(tempFile)], (result, err) => {
-        if (err) {
-          res.statusCode = 500;
-          return res.send(`Error getting data!`);
-        }
-        res.send(JSON.parse(result));
-        // Delete file
-        fs.unlink(tempFile + ".hea", fileDeleteHandler);
-        fs.unlink(tempFile + ".dat", fileDeleteHandler);
-      });
+      if (fs.existsSync(`${tempFolder}waveform-${wid}.txt`)) {
+        fs.readFile(`${tempFolder}waveform-${wid}.txt`, (err, data) => {
+          
+          if (err) return res.sendStatus(500);
+          res.send(JSON.parse(data));
+        });
+      } else {
+        runPython("src/wfdbizer.py", [path.resolve(tempFile)], (result, err) => {
+          if (err) {
+            res.statusCode = 500;
+            return res.send(`Error getting data!`);
+          }
+          res.send(JSON.parse(result));
+          fs.writeFileSync(`${tempFolder}waveform-${wid}.txt`, result);
+          
+          // Delete file
+          // Enable caching
+          // fs.unlink(tempFile + ".hea", fileDeleteHandler);
+          // fs.unlink(tempFile + ".dat", fileDeleteHandler);
+        });
+      }
     });
   });
 });
