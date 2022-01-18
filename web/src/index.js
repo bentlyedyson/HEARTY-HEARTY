@@ -1,7 +1,7 @@
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, SceneLoader, ImportMeshAsync, PointLight, CreateScene, Button, CreateSimpleButton} from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, SceneLoader, ImportMeshAsync, PointLight, CreateScene, Button, CreateSimpleButton, BackgroundMaterial, Texture, Layer} from "@babylonjs/core";
 import { bayerDitherFunctions } from "@babylonjs/core/Shaders/ShadersInclude/bayerDitherFunctions";
 
 class App {
@@ -20,8 +20,12 @@ class App {
       const scene = new Scene(engine);
 
 
+        var layer = new Layer('','black_grid.jpg',scene, true)
+
+    
         // load 3d model
         function heart() {
+
         const stat = SceneLoader.ImportMesh("", "./", "heart.babylon", scene)
 
         const light3 = new HemisphericLight("light", new Vector3(500, 500, 5000), scene);
@@ -92,13 +96,14 @@ class App {
         const camera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
         
-        var renderRunning = false
+        var renderRunning = true
         if(renderRunning){
             heart();
         } else {
             heart1();
     
         }
+
       // hide/show the Inspector    
       window.addEventListener("keydown", (ev) => {
           // Shift+Ctrl+Alt+I
