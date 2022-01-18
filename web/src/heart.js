@@ -25,11 +25,11 @@ class Heart {
       );
       light.intensity = 100;
 
-      const light1 = new PointLight("light", new Vector3(50, 50, -200), scene);
-      light1.intensity = 600000;
+      // const light1 = new PointLight("light", new Vector3(50, 50, -200), scene);
+      // light1.intensity = 600000;
 
-      const light2 = new PointLight("light", new Vector3(50, 50, -200), scene);
-      light2.intensity = 600000;
+      // const light2 = new PointLight("light", new Vector3(50, 50, -200), scene);
+      // light2.intensity = 600000;
 
       const { minScale } = this;
       for (const mesh of meshes) {
