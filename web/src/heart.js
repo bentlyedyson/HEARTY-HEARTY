@@ -3,6 +3,7 @@ import {
   PointLight,
   SceneLoader,
   Vector3,
+  Animation,
 } from "@babylonjs/core";
 
 class Heart {
@@ -15,44 +16,56 @@ class Heart {
     this.scene = scene;
     this.meshes;
 
-    SceneLoader.ImportMesh(
-      "",
-      "./",
-      "heart_animation.babylon",
-      scene,
-      (meshes) => {
-        // Set up lights
-        const light = new HemisphericLight(
-          "light",
-          new Vector3(500, 500, 5000),
-          scene
+    SceneLoader.ImportMesh("", "./", "heart.babylon", scene, (meshes) => {
+      // Set up lights
+      const light = new HemisphericLight(
+        "light",
+        new Vector3(500, 500, 5000),
+        scene
+      );
+      light.intensity = 100;
+
+      const light1 = new PointLight("light", new Vector3(50, 50, -200), scene);
+      light1.intensity = 600000;
+
+      const light2 = new PointLight("light", new Vector3(50, 50, -200), scene);
+      light2.intensity = 600000;
+
+      const { minScale } = this;
+      for (const mesh of meshes) {
+        mesh.scaling = new Vector3(minScale, minScale, minScale);
+
+        mesh.animations = [];
+        // Rotation Animation
+        const rotate = new Animation(
+          "heartRotate-" + mesh.id,
+          "rotation",
+          5,
+          Animation.ANIMATIONTYPE_VECTOR3,
+          Animation.ANIMATIONLOOPMODE_CYCLE
         );
-        light.intensity = 100;
-
-        const light1 = new PointLight(
-          "light",
-          new Vector3(50, 50, -200),
-          scene
-        );
-        light1.intensity = 600000;
-
-        const light2 = new PointLight(
-          "light",
-          new Vector3(50, 50, -200),
-          scene
-        );
-        light2.intensity = 600000;
-
-        for (const mesh of meshes) {
-          mesh.scaling.x = this.minScale;
-          mesh.scaling.y = this.minScale;
-          mesh.scaling.z = this.minScale;
-        }
-
-        this.meshes = meshes;
-        scene.registerBeforeRender(this._registerBeat.bind(this));
+        const keys = [
+          {
+            frame: 0,
+            value: new Vector3(0, 0, 0),
+          },
+          {
+            frame: 50,
+            value: new Vector3(Math.PI, 0, Math.PI),
+          },
+          {
+            frame: 100,
+            value: new Vector3(Math.PI * 2, 0, Math.PI * 2),
+          },
+        ];
+        rotate.setKeys(keys);
+        mesh.animations.push(rotate);
+        scene.beginAnimation(mesh, 0, 100, true);
       }
-    );
+
+      this.meshes = meshes;
+      scene.registerBeforeRender(this._registerBeat.bind(this));
+    });
   }
 
   _registerBeat() {
@@ -105,9 +118,7 @@ class Heart {
     this.scale = true;
 
     for (const mesh of meshes) {
-      mesh.scaling.x = minScale;
-      mesh.scaling.y = minScale;
-      mesh.scaling.z = minScale;
+      mesh.scaling = new Vector3(minScale, minScale, minScale);
     }
   }
 }
