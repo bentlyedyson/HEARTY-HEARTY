@@ -6,7 +6,7 @@ import {
   StandardMaterial,
   Vector3,
 } from "@babylonjs/core";
-import { jsonHtml } from "./util";
+import { jsonHtml, randomRange } from "./util";
 
 // Waveform variables
 const resol = 500;
@@ -41,9 +41,21 @@ class DataController {
     this.fetching = false;
     this.scene = scene;
     this.curIndex = 0;
+    this.linesystem;
 
     this.randomFetch();
 
+    this.lineMeshes = [];
+    this._resetLineMeshes();
+
+    this._waveformAnnotation();
+
+    this._registerButtons();
+
+    scene.registerBeforeRender(this._animationLoop.bind(this));
+  }
+
+  _registerButtons() {
     document.getElementById("randomize").addEventListener("click", () => {
       if (!this.fetching) {
         document.getElementById("display").innerHTML = "";
@@ -51,12 +63,24 @@ class DataController {
       }
     });
 
-    this.lineMeshes = [];
-    this._resetLineMeshes();
+    document.getElementById("viewraw").addEventListener("click", () => {
+      const style = document.getElementById("display").style;
+      if (style.width === "0px") {
+        style.width = "500px";
+        style.height = "300px";
+      } else {
+        style.width = "0px";
+        style.height = "0px";
+      }
+    });
 
-    this._waveformAnnotation();
-
-    scene.registerBeforeRender(this._animationLoop.bind(this));
+    document.getElementById("getdata").addEventListener("click", () => {
+      if (!this.fetching) {
+        const num = parseInt(document.getElementById("customdata").value, 10);
+        if (!num || num < 1 || num > 21837) return alert("Invalid dataset!");
+        this.fetchData(num);
+      }
+    });
   }
 
   _waveformAnnotation() {
@@ -136,7 +160,7 @@ class DataController {
         curLineMesh[i] = new Vector3(
           xPos,
           passLine
-            ? yPos + waveYPos + waveformDist + 30
+            ? yPos + waveYPos + waveformDist + 50
             : yPos + waveYPos + curWave[waveI] * waveformMult,
           i
         );
@@ -164,14 +188,21 @@ class DataController {
       }
       this.lineMeshes.push(arr);
     }
-    this.linesystem = MeshBuilder.CreateLineSystem(
-      "waveforms",
-      {
+    if (!this.linesystem) {
+      this.linesystem = MeshBuilder.CreateLineSystem(
+        "waveforms",
+        {
+          lines: this.lineMeshes,
+          updatable: true,
+        },
+        this.scene
+      );
+    } else {
+      this.linesystem = MeshBuilder.CreateLineSystem("waveforms", {
         lines: this.lineMeshes,
-        updatable: true,
-      },
-      this.scene
-    );
+        instance: this.linesystem,
+      });
+    }
   }
 
   _doneFetchData() {
@@ -187,26 +218,31 @@ class DataController {
     this.fetching = true;
     document.getElementById("loading").classList.remove("hide");
 
+    // Reset data
+    this.waveform = [];
+    this.metadata = {};
+    this._resetLineMeshes();
+    document.getElementById("display").innerHTML = "";
+
     // How many requests have been completed
     fetch(`${this.host}data/${num}`)
       .then((x) => x.json())
       .then((x) => {
         this.metadata = x;
+        this.fetching = false;
         this._doneFetchData();
 
         fetch(`${this.host}waveform/${num}`)
           .then((x) => x.json())
           .then((x) => {
             this.waveform = x;
-            this.fetching = false;
             this._doneFetchWaveform();
           });
       });
   }
 
   randomFetch() {
-    // this.fetchData(randomRange(0, this.maxData));
-    this.fetchData(5000);
+    this.fetchData(randomRange(0, this.maxData));
   }
 }
 

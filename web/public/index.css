@@ -16,19 +16,19 @@ body {
 
 pre {
   background-color: ghostwhite;
-  border: 1px solid silver;
-  padding: 10px 20px;
+  padding: 30px 15px;
   border-radius: 24px;
   position: absolute;
-  right: 0;
-  bottom: 0;
-
-  max-height: 300px;
-  max-width: 500px;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+#display {
+  display: block;
   overflow-y: scroll;
-  overflow-x: scroll;
-
-  transition: all ease 1s;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  transition: all ease 0.5s;
 }
 .json-key {
   color: brown;
@@ -38,12 +38,6 @@ pre {
 }
 .json-string {
   color: olive;
-}
-
-#randomize {
-  position: absolute;
-  right: 0;
-  bottom: 0;
 }
 
 #loading {
@@ -67,4 +61,34 @@ pre {
 
 .hide {
   display: none;
+}
+
+.ctrtop {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.ctrtop button {
+  padding: 0.25rem 1rem 0.25rem 1rem;
+  border-radius: 0 0 5px 5px;
+  font-weight: bold;
+  background-color: white;
+  color: darkblue;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  margin: 0rem 0.5rem 0rem 0.5rem;
+}
+
+.ctrtop button:hover {
+  color: blueviolet;
+  text-decoration: underline;
+}
+
+.ctrtop button:active {
+  color: darkmagenta;
+  text-decoration: underline;
 }
