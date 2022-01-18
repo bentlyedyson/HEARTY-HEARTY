@@ -1,8 +1,6 @@
-import { ArcRotateCamera, Engine, Scene, Vector3 } from "@babylonjs/core";
+import { ArcRotateCamera, Engine, Scene, Vector3, Layer } from "@babylonjs/core";
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, SceneLoader, ImportMeshAsync, PointLight, CreateScene, Button, CreateSimpleButton, BackgroundMaterial, Texture, Layer} from "@babylonjs/core";
-
 import Heart from "./heart";
 
 class App {
@@ -14,9 +12,12 @@ class App {
     canvas.id = "gameCanvas";
     document.body.appendChild(canvas);
 
+
     // initialize babylon scene and engine
     const engine = new Engine(canvas, true);
     const scene = new Scene(engine);
+
+    const layer = new Layer('','black_grid.jpg',scene, true)
 
     const heart = new Heart(scene);
 
