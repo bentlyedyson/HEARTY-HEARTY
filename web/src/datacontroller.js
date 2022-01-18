@@ -1,7 +1,6 @@
 import {
   Color3,
   DynamicTexture,
-  Engine,
   MeshBuilder,
   StandardMaterial,
   Vector3,
@@ -125,10 +124,13 @@ class DataController {
       scene,
       true
     );
+    planeTexture.hasAlpha = true;
+
     const planeMat = new StandardMaterial("waveformMat", scene);
     planeMat.diffuseTexture = planeTexture;
+    planeMat.specularColor = new Color3(0, 0, 0);
+    planeMat.emissiveColor = new Color3(0, 0, 0);
     planeDisplay.material = planeMat;
-    const ctx = planeTexture.getContext();
 
     for (let i = 0; i < waveName.length; i++) {
       planeTexture.drawText(
