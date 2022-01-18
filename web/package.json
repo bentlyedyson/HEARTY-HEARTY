@@ -6,6 +6,7 @@
     "@babylonjs/inspector": "^4.2.0",
     "@webpack-cli/generators": "^2.4.1",
     "babel-loader": "^8.2.3",
+    "copy-webpack-plugin": "^10.2.0",
     "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",
     "prettier": "^2.4.1",

@@ -8,6 +8,7 @@ import {
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import Heart from "./heart";
+import DataController from "./datacontroller";
 
 class App {
   constructor() {
@@ -40,6 +41,8 @@ class App {
     camera.lowerAlphaLimit = 0;
     camera.upperAlphaLimit = Math.PI / 3;
     camera.attachControl(canvas, true);
+
+    const dataController = new DataController();
 
     // hide/show the Inspector
     window.addEventListener("keydown", (ev) => {

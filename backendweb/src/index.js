@@ -62,19 +62,23 @@ function runPython(file, args, cb) {
 
   // Make sure we don't call the callback 2 times
   let sent = false;
+  let dataSend = "";
 
   proc.stdout.on("data", (data) => {
-    if (!sent) {
-      cb(data.toString().trim());
-      sent = true;
-    }
+    dataSend += data.toString().trim();
   });
 
+  proc.on("exit", (code) => {
+    if (sent) return;
+    if (code !== 0) return cb("", "error");
+    cb(dataSend);
+    sent = true;
+  })
+
   proc.stderr.on("data", (data) => {
-    if (!sent) {
-      cb(data, "error");
-      sent = true;
-    }
+    if (sent) return;
+    cb(data, "error");
+    sent = true;
   });
 }
 

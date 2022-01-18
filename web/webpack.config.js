@@ -2,6 +2,7 @@
 
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const isProduction = process.env.NODE_ENV == "production";
 
@@ -16,13 +17,16 @@ const config = {
     open: true,
     host: "localhost",
   },
+  context: __dirname,
   plugins: [
-    new HtmlWebpackPlugin({
-      template: "public/index.html",
-    }),
-
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
+    new CopyWebpackPlugin({
+      patterns: [{ from: "public" }],
+    }),
+    new HtmlWebpackPlugin({
+      template: "src/index.html",
+    }),
   ],
   module: {
     rules: [
