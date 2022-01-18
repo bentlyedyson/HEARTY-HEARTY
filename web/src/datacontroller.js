@@ -5,38 +5,43 @@ import {
   Vector3,
   Layer,
 } from "@babylonjs/core";
+import { randomRange } from "./util";
 
 class DataController {
   constructor() {
     this.host = "https://heartyapi.jasoncoding.com/";
     this.metadata = {};
     this.waveform = [];
+    this.maxData = 21837;
+    this.fetching = false;
 
-    this.fetchData(50);
+    this.randomFetch();
   }
 
   _doneFetchData() {
-    console.log(this.metadata);
-    console.log(this.waveform);
+    this.fetching = false;
   }
 
   fetchData(num) {
-    // // How many requests have been completed
+    this.fetching = true;
+
+    // How many requests have been completed
     let completes = 0;
     fetch(`${this.host}data/${num}`)
       .then((x) => x.json())
       .then((x) => {
         this.metadata = x;
-        completes++;
-        if (completes >= 2) this._doneFetchData();
+        fetch(`${this.host}waveform/${num}`)
+          .then((x) => x.json())
+          .then((x) => {
+            this.waveform = x;
+            this._doneFetchData();
+          });
       });
-    fetch(`${this.host}waveform/${num}`)
-      .then((x) => x.json())
-      .then((x) => {
-        this.waveform = x;
-        completes++;
-        if (completes >= 2) this._doneFetchData();
-      });
+  }
+
+  randomFetch() {
+    this.fetchData(randomRange(0, this.maxData));
   }
 }
 
