@@ -9,7 +9,7 @@ import {
 class Heart {
   constructor(scene) {
     // Props
-    this.minScale = 1.43;
+    this.minScale = 1.4;
     this.maxScale = 1.5;
     this.scale = true;
     this.beat = false; // Whether the heart should beat
@@ -75,8 +75,8 @@ class Heart {
     // Register animation
     const { minScale, maxScale, meshes, scale } = this;
 
-    const scaleUpInc = 0.008;
-    const scaleDownInc = 0.002;
+    const scaleUpInc = 0.01;
+    const scaleDownInc = 0.003;
 
     for (const mesh of meshes) {
       if (scale) {

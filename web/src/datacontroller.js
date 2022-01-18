@@ -5,7 +5,7 @@ import {
   StandardMaterial,
   Vector3,
 } from "@babylonjs/core";
-import { jsonHtml, randomRange } from "./util";
+import { jsonHtml, lerp, randomRange } from "./util";
 
 // Waveform variables
 const resol = 500;
@@ -15,6 +15,8 @@ const waveformDist = 30; // Distance between each waveform
 const waveformMult = 15; // Multiply the waveform by this amount
 
 const sensorZ = 100;
+
+const chosenWaveform = 0;
 
 const waveName = [
   "I",
@@ -32,7 +34,7 @@ const waveName = [
 ];
 
 class DataController {
-  constructor(scene) {
+  constructor(scene, heart) {
     this.host = "https://heartyapi.jasoncoding.com/";
     this.metadata = {};
     this.waveform = [];
@@ -42,13 +44,19 @@ class DataController {
     this.curIndex = 0;
     this.linesystem;
 
+    this.beatThreshold = 0;
+
+    this.heart = heart;
+    this.isBeating = false;
+
     this.randomFetch();
 
     this.lineMeshes = [];
+
+    this.sensorMat;
+
     this._resetLineMeshes();
-
     this._waveformAnnotation();
-
     this._registerButtons();
 
     scene.registerBeforeRender(this._animationLoop.bind(this));
@@ -59,6 +67,8 @@ class DataController {
       if (!this.fetching) {
         document.getElementById("display").innerHTML = "";
         this.randomFetch();
+      } else {
+        alert("I am still fetching!");
       }
     });
 
@@ -78,6 +88,8 @@ class DataController {
         const num = parseInt(document.getElementById("customdata").value, 10);
         if (!num || num < 1 || num > 21837) return alert("Invalid dataset!");
         this.fetchData(num);
+      } else {
+        alert("I am still fetching!");
       }
     });
   }
@@ -105,6 +117,8 @@ class DataController {
       yPos + sensorHeight / 2 - 50,
       sensorZ
     );
+
+    this.sensorMat = sensorMat;
 
     const planeDisplay = MeshBuilder.CreatePlane(
       "waveformPlane",
@@ -169,6 +183,21 @@ class DataController {
       }
     }
 
+    // Trigger beat
+    if (
+      waveform[chosenWaveform][(curIndex + sensorZ) % 1000] >=
+      this.beatThreshold
+    ) {
+      this.sensorMat.diffuseColor = new Color3(0, 1, 0);
+      if (!this.isBeating) {
+        this.heart.beatHeart();
+      }
+      this.isBeating = true;
+    } else {
+      this.sensorMat.diffuseColor = new Color3(1, 0, 0);
+      this.isBeating = false;
+    }
+
     this.linesystem = MeshBuilder.CreateLineSystem("waveforms", {
       lines: this.lineMeshes,
       instance: this.linesystem,
@@ -214,7 +243,18 @@ class DataController {
     );
   }
 
-  _doneFetchWaveform() {}
+  _doneFetchWaveform() {
+    // Select which waveform we want to use to detect the beats
+    const beater = this.waveform[chosenWaveform];
+    const avg = beater.reduce((a, b) => a + b) / beater.length;
+    const max = Math.max(...beater);
+
+    // Interpolate both points. 0.5 we will use as threshold for heart beat
+    this.beatThreshold = lerp(avg, max, 0.5);
+    console.log(this.beatThreshold);
+    console.log(avg);
+    console.log(max);
+  }
 
   fetchData(num) {
     this.fetching = true;
