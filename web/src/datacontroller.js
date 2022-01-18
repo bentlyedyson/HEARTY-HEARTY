@@ -251,9 +251,6 @@ class DataController {
 
     // Interpolate both points. 0.5 we will use as threshold for heart beat
     this.beatThreshold = lerp(avg, max, 0.5);
-    console.log(this.beatThreshold);
-    console.log(avg);
-    console.log(max);
   }
 
   fetchData(num) {
