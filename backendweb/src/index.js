@@ -132,7 +132,7 @@ app.get("/waveform/:wid", (req, res) => {
           res.statusCode = 500;
           return res.send(`Error getting data!`);
         }
-        res.send(result);
+        res.send(JSON.parse(result));
         // Delete file
         fs.unlink(tempFile + ".hea", fileDeleteHandler);
         fs.unlink(tempFile + ".dat", fileDeleteHandler);
