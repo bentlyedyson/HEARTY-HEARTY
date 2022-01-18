@@ -51,11 +51,11 @@ class Heart {
           },
           {
             frame: 50,
-            value: new Vector3(Math.PI, 0, Math.PI),
+            value: new Vector3(0, Math.PI, Math.PI),
           },
           {
             frame: 100,
-            value: new Vector3(Math.PI * 2, 0, Math.PI * 2),
+            value: new Vector3(0, Math.PI * 2, Math.PI * 2),
           },
         ];
         rotate.setKeys(keys);

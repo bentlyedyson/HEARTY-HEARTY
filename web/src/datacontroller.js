@@ -8,7 +8,7 @@ import {
 } from "@babylonjs/core";
 import { randomRange, jsonHtml } from "./util";
 
-const resol = 100;
+const resol = 1000;
 
 class DataController {
   constructor(scene) {
@@ -36,16 +36,32 @@ class DataController {
   }
 
   _animationLoop() {
-    // this.curIndex++;
-    // for (let j = 0; i < 12; j++) {
-    //   for (let i = 0; i < resol; i++) {
-    //     this.lineMeshes[j][i] = new Vector3()
-    //   }
-    // }
-    // this.linesystem = MeshBuilder.CreateLineSystem("waveforms", {
-    //   lines: this.lineMeshes,
-    //   instance: this.linesystem,
-    // });
+    const { waveform, curIndex } = this;
+    if (waveform.length === 0) return;
+
+    for (let j = 0; j < 12; j++) {
+      const curWave = waveform[j];
+      const curLineMesh = this.lineMeshes[j];
+
+      for (let i = 0; i < resol; i++) {
+        curLineMesh[i] = new Vector3(
+          -120,
+          j * 30 + curWave[curIndex + i] * 15 - 100,
+          i
+        );
+      }
+    }
+
+    this.linesystem = MeshBuilder.CreateLineSystem("waveforms", {
+      lines: this.lineMeshes,
+      instance: this.linesystem,
+    });
+
+    if (this.curIndex > 1000) {
+      this.curIndex = 0;
+    } else {
+      this.curIndex++;
+    }
   }
 
   _resetLineMeshes() {
@@ -98,7 +114,8 @@ class DataController {
   }
 
   randomFetch() {
-    this.fetchData(randomRange(0, this.maxData));
+    // this.fetchData(randomRange(0, this.maxData));
+    this.fetchData(5000);
   }
 }
 

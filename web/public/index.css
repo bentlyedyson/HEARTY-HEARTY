@@ -50,7 +50,7 @@ pre {
   position: absolute;
   color: white;
 
-  right: 10px;
+  right: 32px;
   top: 50%;
   font-family: "Courier New", Courier, monospace;
   animation: rotation 5s infinite;

@@ -30,8 +30,8 @@ class App {
       "Camera",
       Math.PI / 6,
       Math.PI / 2,
-      400,
-      new Vector3(0, 0, 250),
+      500,
+      new Vector3(0, 0, 500 * (window.innerWidth / 3500)),
       scene
     );
     // Limit movement
