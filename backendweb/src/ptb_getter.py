@@ -21,8 +21,9 @@ for x, y in res["scp_codes"].items():
     "likelihood": y
   }
   # Gets superdiagnostic
-  if y >= 100.0 and scp_df.loc[x].diagnostic == 1.0:
-    super_diag.append(x)
+  sup_class = scp_df.loc[x].diagnostic_class
+  if scp_df.loc[x].diagnostic == 1.0 and sup_class not in super_diag:
+    super_diag.append(sup_class)
   
 res["scp_codes"] = new_scp_codes
 res["super_diag"] = super_diag
