@@ -65,7 +65,7 @@ function runPython(file, args, cb) {
   let dataSend = "";
 
   proc.stdout.on("data", (data) => {
-    dataSend += data.toString().trim();
+    dataSend += data.toString();
   });
 
   proc.on("exit", (code) => {
