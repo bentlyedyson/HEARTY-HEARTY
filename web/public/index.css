@@ -13,3 +13,26 @@ body {
   display: inline-block;
   overflow: hidden;
 }
+
+pre {
+  background-color: ghostwhite;
+  border: 1px solid silver;
+  padding: 10px 20px;
+  border-radius: 24px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  max-height: 300px;
+  max-width: 500px;
+  overflow-y: scroll;
+}
+.json-key {
+  color: brown;
+}
+.json-value {
+  color: navy;
+}
+.json-string {
+  color: olive;
+}

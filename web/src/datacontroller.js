@@ -5,7 +5,7 @@ import {
   Vector3,
   Layer,
 } from "@babylonjs/core";
-import { randomRange } from "./util";
+import { randomRange, jsonHtml } from "./util";
 
 class DataController {
   constructor() {
@@ -20,13 +20,16 @@ class DataController {
 
   _doneFetchData() {
     this.fetching = false;
+
+    document.getElementById("display").innerHTML = jsonHtml.prettyPrint(
+      this.metadata
+    );
   }
 
   fetchData(num) {
     this.fetching = true;
 
     // How many requests have been completed
-    let completes = 0;
     fetch(`${this.host}data/${num}`)
       .then((x) => x.json())
       .then((x) => {
