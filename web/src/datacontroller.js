@@ -33,6 +33,14 @@ const waveName = [
   "V6",
 ];
 
+const superClass = {
+  NORM: "Normal ECG",
+  MI: "Myocardial Infarction",
+  STTC: "ST/T Change",
+  CD: "Conduction Disturbance",
+  HYP: "Hypertrophy",
+};
+
 class DataController {
   constructor(scene, heart) {
     this.host = "https://heartyapi.jasoncoding.com/";
@@ -45,6 +53,7 @@ class DataController {
     this.linesystem;
 
     this.beatThreshold = 0;
+    this.superTexture;
 
     this.heart = heart;
     this.isBeating = false;
@@ -73,13 +82,11 @@ class DataController {
     });
 
     document.getElementById("viewraw").addEventListener("click", () => {
-      const style = document.getElementById("display").style;
-      if (style.width === "0px") {
-        style.width = "500px";
-        style.height = "300px";
+      const style = document.getElementById("display").classList;
+      if (style.contains("display-full")) {
+        style.remove("display-full");
       } else {
-        style.width = "0px";
-        style.height = "0px";
+        style.add("display-full");
       }
     });
 
@@ -120,6 +127,7 @@ class DataController {
 
     this.sensorMat = sensorMat;
 
+    // Plane for waveform annotation
     const planeDisplay = MeshBuilder.CreatePlane(
       "waveformPlane",
       { width: 100, height: sensorHeight },
@@ -157,6 +165,72 @@ class DataController {
         true,
         true
       );
+    }
+
+    // Plane for Additional info
+    const superPlane = MeshBuilder.CreatePlane(
+      "waveformPlane",
+      { width: 192, height: 256 },
+      scene
+    );
+    superPlane.rotation.y = -Math.PI;
+    superPlane.position = new Vector3(170, 0, 0);
+
+    const superTexture = new DynamicTexture(
+      "waveformTexture",
+      { width: 192, height: 256 },
+      scene,
+      true
+    );
+    superTexture.hasAlpha = true;
+
+    const superMat = new StandardMaterial("waveformMat", scene);
+    superMat.diffuseTexture = superTexture;
+    superMat.specularColor = new Color3(0, 0, 0);
+    superMat.emissiveColor = new Color3(0, 0, 0);
+    superPlane.material = superMat;
+
+    this.superTexture = superTexture;
+    this.superMat = superMat;
+  }
+
+  _redrawSuper() {
+    if (!this.superTexture) return;
+
+    this.superTexture.dispose();
+
+    const superTexture = new DynamicTexture(
+      "waveformTexture",
+      { width: 192, height: 256 },
+      this.scene,
+      true
+    );
+    superTexture.hasAlpha = true;
+    this.superTexture = superTexture;
+    this.superMat.diffuseTexture = superTexture;
+
+    // Draw text
+    const { ecg_id, patient_id, age, sex, super_diag } = this.metadata;
+
+    let info = `ECG ID: ${ecg_id}\nPatient: ${patient_id}\nAge: ${age}\nSex: ${
+      sex == 0 ? "Male" : "Female"
+    }\nSuper Diagnostic:`;
+    info = info.split("\n");
+    info = info.concat(super_diag.map((x) => superClass[x]));
+
+    let i = 0;
+    for (let tex of info) {
+      this.superTexture.drawText(
+        tex,
+        10,
+        (i + 1) * 18,
+        "bold 15px monospace",
+        "white",
+        "transparent",
+        true,
+        true
+      );
+      i++;
     }
   }
 
@@ -241,6 +315,8 @@ class DataController {
     document.getElementById("display").innerHTML = jsonHtml.prettyPrint(
       this.metadata
     );
+
+    this._redrawSuper();
   }
 
   _doneFetchWaveform() {
@@ -262,6 +338,7 @@ class DataController {
     this.metadata = {};
     this._resetLineMeshes();
     document.getElementById("display").innerHTML = "";
+    if (this.superTexture !== undefined) this.superTexture.dispose();
 
     // How many requests have been completed
     fetch(`${this.host}data/${num}`)

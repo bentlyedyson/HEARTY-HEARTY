@@ -39,7 +39,7 @@ class App {
     camera.lowerRadiusLimit = 450;
     camera.upperRadiusLimit = 500;
     camera.lowerAlphaLimit = 0;
-    camera.upperAlphaLimit = Math.PI / 3;
+    camera.upperAlphaLimit = Math.PI / 2;
     camera.attachControl(canvas, true);
 
     const dataController = new DataController(scene, heart);
