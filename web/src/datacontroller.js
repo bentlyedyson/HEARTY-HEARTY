@@ -31,7 +31,7 @@ const waveName = [
   "V4",
   "V5",
   "V6",
-];
+].reverse();
 
 const superClass = {
   NORM: "Normal ECG",
@@ -64,11 +64,127 @@ class DataController {
 
     this.sensorMat;
 
+    // If the port is still reading
+    this.predictMenu = false;
+    this.reading = false; // WHether we are reading or not
+    this.readWaveform = []; // Waveform result
+    this.readStringBuf = ""; // String reading buffer
+    this.readLine;
+    this.readLinePoints;
+
     this._resetLineMeshes();
     this._waveformAnnotation();
     this._registerButtons();
+    this._initializePort(); // Initialize port for detection
 
     scene.registerBeforeRender(this._animationLoop.bind(this));
+  }
+
+  _initializePort() {
+    document.getElementById("predict").addEventListener("click", () => {
+      if (!("serial" in navigator))
+        return alert(
+          "Serial API is not supported in this browser! Try Chrome."
+        );
+
+      if (this.predictMenu) {
+        this.predictMenu = false;
+        // Do stuff to go back to normal
+        this.readLine.dispose();
+        this.randomFetch();
+        return;
+      }
+
+      this.predictMenu = true;
+
+      // Toggle the view
+      this._resetData();
+      this.readWaveform = [];
+
+      // Create lines
+      const points = [];
+      for (let i = 0; i < 1000; i++) {
+        points.push(new Vector3(xPos, yPos + -2 * waveformDist, -150));
+      }
+      this.readLinePoints = points;
+      this.readLine = MeshBuilder.CreateLines("readWave", {
+        points: this.readLinePoints,
+        updatable: true,
+      });
+
+      // Open serial port
+      navigator.serial.requestPort().then((port) => {
+        port.open({ baudRate: 115200 }).then(() => {
+          const textDecoder = new TextDecoderStream();
+          const readableStreamClosed = port.readable.pipeTo(
+            textDecoder.writable
+          );
+          const reader = textDecoder.readable.getReader();
+          this.reading = true;
+
+          // Read loop
+          const that = this;
+          (function loop() {
+            if (!that.reading) return;
+
+            reader.read().then(({ value, done }) => {
+              if (done) {
+                reader.releaseLock();
+                that.reading = false;
+              } else {
+                // Do reading here
+                that.readStringBuf += value;
+                const buf = that.readStringBuf;
+
+                // Parsing
+                if (buf.includes("\n")) {
+                  const split = buf.split("\n");
+                  const dat = split.shift();
+                  that.readStringBuf = split.join("\n");
+
+                  // See if it can be jsonified
+                  try {
+                    const { res } = JSON.parse(dat);
+                    // if (res !== "!") that.readWaveform.push(res);
+                    that.readWaveform.push(0.2);
+                    if (that.readWaveform.length >= 1000) {
+                      console.log("Finished reading.");
+                      that.reading = false;
+                      reader
+                        .cancel()
+                        .then(() => reader.releaseLock())
+                        .then(() => {
+                          port.close();
+                        });
+                      if (confirm("Do you want to predict this data?")) {
+                        that._predictData();
+                      }
+                    }
+                  } catch {}
+                }
+                if (that.reading) loop();
+              }
+            });
+          })();
+        });
+      });
+    });
+  }
+
+  _predictData() {
+    console.log("Bruh lol");
+    fetch(this.host + "predict", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ waveform: this.readWaveform }),
+    })
+      .then((x) => x.json())
+      .then((data) => {
+        alert(`['CD', 'HYP', 'MI', 'NORM', 'STTC']\n${data}`);
+      });
   }
 
   _registerButtons() {
@@ -235,7 +351,29 @@ class DataController {
   }
 
   _animationLoop() {
-    const { waveform, curIndex } = this;
+    const { waveform, curIndex, predictMenu, readWaveform } = this;
+
+    // Do predictMenu draw
+    if (predictMenu) {
+      const y = yPos + -2 * waveformDist;
+
+      for (let i = 0; i < readWaveform.length; i++) {
+        this.readLinePoints[i] = new Vector3(
+          xPos,
+          y + readWaveform[i] * 4,
+          i - 150
+        );
+      }
+
+      this.readLine = MeshBuilder.CreateLines("readWave", {
+        instance: this.readLine,
+        points: this.readLinePoints,
+        updatable: true,
+      });
+
+      return;
+    }
+
     if (waveform.length === 0) return;
 
     for (let j = 0; j < 12; j++) {
@@ -329,16 +467,20 @@ class DataController {
     this.beatThreshold = lerp(avg, max, 0.5);
   }
 
-  fetchData(num) {
-    this.fetching = true;
-    document.getElementById("loading").classList.remove("hide");
-
-    // Reset data
+  _resetData() {
     this.waveform = [];
     this.metadata = {};
     this._resetLineMeshes();
     document.getElementById("display").innerHTML = "";
     if (this.superTexture !== undefined) this.superTexture.dispose();
+  }
+
+  fetchData(num) {
+    this.fetching = true;
+    document.getElementById("loading").classList.remove("hide");
+
+    // Reset data
+    this._resetData();
 
     // How many requests have been completed
     fetch(`${this.host}data/${num}`)
