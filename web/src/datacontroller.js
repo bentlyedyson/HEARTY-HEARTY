@@ -145,11 +145,12 @@ class DataController {
                   // See if it can be jsonified
                   try {
                     const { res } = JSON.parse(dat);
-                    // if (res !== "!") that.readWaveform.push(res);
-                    that.readWaveform.push(0.2);
+                    if (res !== "!" && res !== undefined)
+                      that.readWaveform.push(res * 7);
                     if (that.readWaveform.length >= 1000) {
                       console.log("Finished reading.");
                       that.reading = false;
+                      // TODO: Lol error here
                       reader
                         .cancel()
                         .then(() => reader.releaseLock())
@@ -360,7 +361,7 @@ class DataController {
       for (let i = 0; i < readWaveform.length; i++) {
         this.readLinePoints[i] = new Vector3(
           xPos,
-          y + readWaveform[i] * 4,
+          y + readWaveform[i] * 20,
           i - 150
         );
       }
